@@ -273,4 +273,153 @@ document.addEventListener("DOMContentLoaded", function() {
     }
   });
   });
+// Toggle video controls
+function toggleControls() {
+  if (player.classList.contains('hide-controls')) {
+    player.classList.remove('hide-controls');
+  } else {
+    player.classList.add('hide-controls');
+  }
+}
+
+// Event listener for video click to toggle controls
+video.addEventListener('click', toggleControls);
+
+// Switch video sources
+const sourceList = [
+  'video-source-1.mp4',
+  'video-source-2.mp4',
+  'video-source-3.mp4'
+];
+let currentSourceIndex = 0;
+
+function switchVideoSource() {
+  currentSourceIndex = (currentSourceIndex + 1) % sourceList.length;
+  const newSource = sourceList[currentSourceIndex];
+  video.src = newSource;
+  video.load();
+  video.play();
+}
+
+// Button to switch video sources
+const switchSourceBtn = document.querySelector('.switch-source-btn');
+switchSourceBtn.addEventListener('click', switchVideoSource);
+
+// Playlist feature
+const playlist = [
+  {
+    title: 'Video 1',
+    source: 'video1.mp4'
+  },
+  {
+    title: 'Video 2',
+    source: 'video2.mp4'
+  },
+  {
+    title: 'Video 3',
+    source: 'video3.mp4'
+  }
+];
+let currentVideoIndex = 0;
+
+function playVideoFromPlaylist(index) {
+  currentVideoIndex = index;
+  const selectedVideo = playlist[index];
+  video.src = selectedVideo.source;
+  video.load();
+  video.play();
+}
+
+// Generate playlist items dynamically
+const playlistContainer = document.querySelector('.playlist');
+playlist.forEach((video, index) => {
+  const playlistItem = document.createElement('div');
+  playlistItem.classList.add('playlist-item');
+  playlistItem.textContent = video.title;
+  playlistItem.addEventListener('click', () => {
+    playVideoFromPlaylist(index);
+  });
+  playlistContainer.appendChild(playlistItem);
+});
+
+// Captions/subtitles feature
+const captionsBtn = document.getElementById('captions-btn');
+const captionsContainer = document.querySelector('.captions-container');
+
+function toggleCaptions() {
+  captionsContainer.classList.toggle('show-captions');
+}
+
+captionsBtn.addEventListener('click', toggleCaptions);
+
+// Share video feature
+const shareBtn = document.getElementById('share-btn');
+
+function shareVideo() {
+  // Replace with your own share functionality
+  alert('Share the video on social media!');
+}
+
+shareBtn.addEventListener('click', shareVideo);
+
+// Keyboard shortcuts
+document.addEventListener('keydown', function (event) {
+  const spaceBar = 32;
+  const leftArrow = 37;
+  const rightArrow = 39;
+  const upArrow = 38;
+  const downArrow = 40;
+  const fKey = 70;
+  const mKey = 77;
+
+  if (event.keyCode === spaceBar) {
+    togglePlay();
+  } else if (event.keyCode === leftArrow) {
+    video.currentTime -= timeStep;
+  } else if (event.keyCode === rightArrow) {
+    video.currentTime += timeStep;
+  } else if (event.keyCode === upArrow) {
+    video.volume += 0.1;
+    if (video.volume > 1) {
+      video.volume = 1;
+    }
+    volumeBar.value = video.volume;
+    if (video.volume > 0) {
+      video.muted = false;
+      volumeIcon.classList.replace('fa-volume-off', 'fa-volume-up');
+    }
+  } else if (event.keyCode === downArrow) {
+    video.volume -= 0.1;
+    if (video.volume < 0) {
+      video.volume = 0;
+    }
+    volumeBar.value = video.volume;
+    if (video.volume === 0) {
+      video.muted = true;
+      volumeIcon.classList.replace('fa-volume-up', 'fa-volume-off');
+    }
+  } else if (event.keyCode === fKey) {
+    toggleFullscreen();
+  } else if (event.keyCode === mKey) {
+    toggleMute();
+  }
+});
+
+// Picture-in-picture mode
+const pipBtn = document.querySelector('.pip-btn');
+
+async function togglePIP() {
+  try {
+    if (document.pictureInPictureElement) {
+      await document.exitPictureInPicture();
+    } else if (document.pictureInPictureEnabled && video.readyState === 4) {
+      await video.requestPictureInPicture();
+    }
+  } catch (error) {
+    console.error('Error toggling Picture-in-Picture mode:', error);
+  }
+}
+
+pipBtn.addEventListener('click', togglePIP);
+
   
